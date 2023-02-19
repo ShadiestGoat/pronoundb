@@ -1,5 +1,7 @@
 # PronounDB
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/shadiestgoat/pronoundb.svg)](https://pkg.go.dev/github.com/shadiestgoat/pronoundb)
+
 This is an abstraction/wrapper to the [pronoundb](https://pronoundb.org) project. This repository currently supports V1 of the api (V2 is not yet written, see [this issue](https://github.com/cyyynthia/pronoundb.org/issues/68))
 
 This package also includes several tools for grammar to do with these pronouns - a generalizes they/them/their/themself function, and tools for determining things like *is* vs *are*, or if an extra *s* is needed for verbs (think she *is*, she *prefers* vs they *are*, they *prefer*)
