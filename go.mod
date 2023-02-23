@@ -1,3 +1,3 @@
-module github.com/shadiestgoat/pronoundb
+module github.com/ShadiestGoat/pronoundb
 
 go 1.20

@@ -1,6 +1,6 @@
 # PronounDB
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/shadiestgoat/pronoundb.svg)](https://pkg.go.dev/github.com/shadiestgoat/pronoundb)
+[![Go Reference](https://pkg.go.dev/badge/github.com/ShadiestGoat/pronoundb.svg)](https://pkg.go.dev/github.com/ShadiestGoat/pronoundb)
 
 This is an abstraction/wrapper to the [pronoundb](https://pronoundb.org) project. This repository currently supports V1 of the api (V2 is not yet written, see [this issue](https://github.com/cyyynthia/pronoundb.org/issues/68))
 
@@ -16,7 +16,7 @@ This package also includes several tools for grammar to do with these pronouns -
 ```go
 package main
 
-import "github.com/shadiestgoat/pronoundb"
+import "github.com/ShadiestGoat/pronoundb"
 
 func main() {
 	// create new client
