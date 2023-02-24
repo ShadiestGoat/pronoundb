@@ -9,6 +9,7 @@ This package also includes several tools for grammar to do with these pronouns -
 ## Notes
 
 - Some people prefer that pronouns are avoided all together. For that, most of the time the grammar should be handled separately! This package will return empty strings for all the 'grammar' functions for the avoid pronouns option (both `GPR_AVOID` and `PR_AVOID`)
+  - A similar idea is with `PR_OTHER`. It means this person uses other pronouns. For this value, you should just avoid pronouns, as you don't which ones to use. To help with this, calling `BestGender()` on either `PR_AVOID` or `PR_OTHER` returns `GPR_AVOID`.
 - If you choose to parse a `Pronoun` yourself, you should call `*Pronoun.Default()` on it, so that it can get be set into correct form for the internal `allPronouns` map. Just remember that `Pronoun` is a string of the pronoundb abbreviations internally! [Check them out here](https://pronoundb.org/docs)
 
 ## Example

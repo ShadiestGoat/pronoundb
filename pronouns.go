@@ -2,11 +2,16 @@ package pronoundb
 
 type Pronoun string
 
+
+// other: Other pronouns
+
+
 const (
 	PR_UNSPECIFIED Pronoun = "unspecified"
 	PR_ANY         Pronoun = "any"
 	PR_ASK         Pronoun = "ask"
 	PR_AVOID       Pronoun = "avoid"
+	PR_OTHER       Pronoun = "other"
 	PR_HE_HIM      Pronoun = "hh"
 	PR_HE_IT       Pronoun = "hi"
 	PR_HE_SHE      Pronoun = "hs"
@@ -37,6 +42,8 @@ func (p *Pronoun) Default() {
 
 var allPronouns = map[Pronoun][]GenderPronoun{
 	PR_AVOID: {GPR_AVOID},
+	PR_OTHER: {GPR_AVOID},
+	
 	PR_ASK: {GPR_FUZZY},
 	PR_UNSPECIFIED: {GPR_FUZZY},
 	PR_ANY: {GPR_FUZZY, GPR_FEMALE, GPR_MALE, GPR_PERSONAL_IT},
