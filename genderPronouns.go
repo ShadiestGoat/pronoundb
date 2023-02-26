@@ -125,8 +125,12 @@ func (g GenderPronoun) Gender() string {
 }
 
 func (g GenderPronoun) Abbreviation() string {
+	if g == GPR_AVOID {
+		return "avoid"
+	}
+
 	they := g.They()
 	them := g.Them()
 
-	return caps(they) + "/" + caps(them)
+	return they + "/" + them
 }

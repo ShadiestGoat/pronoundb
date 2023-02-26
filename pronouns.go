@@ -41,11 +41,12 @@ func (p *Pronoun) Default() {
 }
 
 var allPronouns = map[Pronoun][]GenderPronoun{
+	PR_UNSPECIFIED: {GPR_FUZZY},
+	
 	PR_AVOID: {GPR_AVOID},
 	PR_OTHER: {GPR_AVOID},
 	
 	PR_ASK: {GPR_FUZZY},
-	PR_UNSPECIFIED: {GPR_FUZZY},
 	PR_ANY: {GPR_FUZZY, GPR_FEMALE, GPR_MALE, GPR_PERSONAL_IT},
 	
 	PR_THEY_THEM: {GPR_FUZZY},
@@ -70,9 +71,17 @@ var allPronouns = map[Pronoun][]GenderPronoun{
 }
 
 func (p Pronoun) Abbreviation() string {
+	switch p {
+	case PR_ANY:
+		return "any"
+	case PR_ASK:
+		return "ask"
+	}
+
 	info := allPronouns[p]
 
 	switch len(info) {
+	// handle for default
 	case 0:
 		return "avoid"
 	case 1:
