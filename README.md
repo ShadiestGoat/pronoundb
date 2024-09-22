@@ -2,49 +2,74 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/ShadiestGoat/pronoundb.svg)](https://pkg.go.dev/github.com/ShadiestGoat/pronoundb)
 
-This is an abstraction/wrapper to the [pronoundb](https://pronoundb.org) project. This repository currently supports V1 of the api (V2 is not yet written, see [this issue](https://github.com/cyyynthia/pronoundb.org/issues/68))
+This is an abstraction/wrapper to the [pronoundb](https://pronoundb.org) project. This repository currently supports V2 of the api
 
 This package also includes several tools for grammar to do with these pronouns - a generalizes they/them/their/themself function, and tools for determining things like *is* vs *are*, or if an extra *s* is needed for verbs (think she *is*, she *prefers* vs they *are*, they *prefer*)
 
 ## Notes
 
-- Some people prefer that pronouns are avoided all together. For that, most of the time the grammar should be handled separately! This package will return empty strings for all the 'grammar' functions for the avoid pronouns option (both `GPR_AVOID` and `PR_AVOID`)
-  - A similar idea is with `PR_OTHER`. It means this person uses other pronouns. For this value, you should just avoid pronouns, as you don't which ones to use. To help with this, calling `BestGender()` on either `PR_AVOID` or `PR_OTHER` returns `GPR_AVOID`
-- If you choose to parse a `Pronoun` yourself, you should call `*Pronoun.Default()` on it, so that it can get be set into correct form for the internal `allPronouns` map. Just remember that `Pronoun` is a string of the pronoundb abbreviations internally! [Check them out here](https://pronoundb.org/docs)
+- Some have 'meta' pronouns which must handled separately. These are `PR_ANY`, `PR_ASK`, `PR_AVOID`, `PR_OTHER`. `PR_ASK`, `PR_AVOID`, `PR_OTHER` return empty functions for all grammar functions. `PR_ANY` returns an empty string for `Abbreviation()`, and everything else would return results that are the same as `PR_THEY`. You can use `IsNominative()` to quickly determine this.
+- You *should* use a user agent - it can help avoid rate limits
 
 ## Example
 
 ```go
 package main
 
-import "github.com/ShadiestGoat/pronoundb"
+import "github.com/ShadiestGoat/pronoundb/v2"
 
 func main() {
 	// create new client
-    c := pronoundb.NewClient()
+    c := pronoundb.NewClient(pronoundb.WithUserAgent(pronoundb.UserAgent{"ShadyBot", "v3", "githubSite"}))
+	user := "654034575"
 
-	pr, err := c.Lookup(pronoundb.PLATFORM_TWITCH, "654034575")
-
+	pronouns, err := c.Lookup(pronoundb.PLATFORM_TWITCH, user)
 	if err != nil {
 		panic("Error when looking up pronouns: " + err.Error())
 	}
+	if _, ok := pronouns[user]; !ok {
+		panic("Unknown user")
+	}
 
-	// Avoid pronouns should always be handled separately!
-	if pr == pronoundb.PR_AVOID {
-		fmt.Println("Twitch streamer Shadiest Goat asks you to avoid pronouns!")
-		fmt.Println("I think Shadiest Goat is the best streamer and you should totally donate on Shadiest Goat's donation page")
-		fmt.Println("Who knows, Shady might even thank you personally (maybe do a little skirt speen if the bank account is running low....)")
+	allPronouns := pronouns[user]
+	bestPr := allPronouns[0]
+
+	if bestPr.IsNominative() {
+		fmt.Printf("User is %v - %v use %v pronouns!\n", bestPr.Gender(), pr.They(), pr.Abbreviation())
+		if len(allPronouns) > 1 && allPronouns[1].IsNominative() {
+			pr2 := allPronouns[1]
+			fmt.Printf("%v also consider %v %v - you can use %v pronouns :3", pr2.They(), pr2.Themself(), pr2.Gender(), pr2.Abbreviation())
+		}
+
 		return
 	}
 
-	// pronoundb supports up to 2 pronouns
-	if len(pr.Genders()) == 2 {
-		fmt.Printf("Twitch streamer Shadiest Goat has %s pronouns, meaning %s prefer%s %s pronouns, but also fully accept%s %s pronouns!\n", pr.Abbreviation(), pr.They(), pr.ExtraS(), pr.BestGender().Gender(), pr.ExtraS(), pr.Genders()[1].Gender())
-	} else {
-		fmt.Printf("Twitch streamer Shadiest Goat is %s and therefor has the following pronouns: %s\n", pr.BestGender(), pr.Abbreviation())
+	switch bestPr {
+		case PR_ANY:
+			fmt.Println("User doesn't have a preference in pronouns")
+        case PR_ASK:
+			fmt.Println("User wishes that you asked - don't use any pronouns/gendered language till you do so")
+        case PR_AVOID:
+			fmt.Println("User wishes to avoid all pronouns & gendered language. Please respect that :3")
+        case PR_OTHER:
+			fmt.Println("User does not fall under the traditional gender range - please ask before you use any gendered language or pronouns :3!")
 	}
-
-	fmt.Printf("I think %s %s the best streamer, and you should donate to %s\n", pr.They(), pr.Are(), pr.Them())
-	fmt.Printf("Who knows, %s might even thank you %s (maybe even do a little skirt speen if %s bank account is running low....)\n", pr.They(), pr.Themself(), pr.Their())
 }
 ```
+
+## Migrating from v1
+
+Non-breaking changes (additions):
+- Added `WithCustomHeaders`, `WithUserAgent` client options
+- Added `IsNominative()` to UsefulGrammar
+- Bulk Lookup now auto separates your IDs
+
+Breaking Changes:
+- Using `v2` of the pronoundb api.
+- Got rid of the `PR_*_*` pronoun setup - thats not how v2 works
+- `(*Pronoun).Default()` is no longer required (and is removed)
+- `(*Pronoun).BestGender()` is no longer a thing - pronouns are in an array
+- `GenderPronoun` is not a thing anymore - theres not difference between `Pronoun` and `GenderPronoun` in v2. `IsNominative()` is helpful here though!
+  - Grammar methods have been mved to `Pronoun`
+- `RawLookup` is removed (not a thing in `v2`)
+- `Lookup` is now the 'bulk lookup' function
